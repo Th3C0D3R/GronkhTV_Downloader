@@ -5,6 +5,7 @@ using System.Windows;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using Newtonsoft.Json;
+using System.Windows.Media;
 
 namespace GronkhTV_DL
 {
@@ -57,6 +58,7 @@ namespace GronkhTV_DL
 		}
 		private void InitWebDriver()
 		{
+			sbiCurrentProcess.Content = "Initialize WebDriver...";
 			try
 			{
 				var s = DriverFinder.FullPath(new ChromeOptions() { BrowserVersion = "stable" });
@@ -65,6 +67,8 @@ namespace GronkhTV_DL
 				var options = new ChromeOptions();
 				options.AddArguments("--headless", "--no-sandbox", "--disable-gpu", "disable-gpu");
 				webDriver = new ChromeDriver(driverService, options);
+				miWebDriverStatus.Foreground = Brushes.Green;
+				miWebDriverStatus.Text = "WebDriver loaded";
 			}
 			catch (Exception)
 			{ }
@@ -89,6 +93,7 @@ namespace GronkhTV_DL
 		{
 			InitWebDriver();
 			DataContext = this;
+			sbiCurrentProcess.Content = "Waiting for action...";
 		}
 	}
 }

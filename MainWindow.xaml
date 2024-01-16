@@ -11,33 +11,57 @@
         MinWidth="740"
         MinHeight="340"
 		Loaded="frmMain_Loaded">
-	<Grid>
-		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="24*"/>
-			<ColumnDefinition Width="13*"/>
-		</Grid.ColumnDefinitions>
-		<Grid.RowDefinitions>
-			<RowDefinition Height="29*" />
-			<RowDefinition Height="265*" />
-			<RowDefinition Height="30*" />
-		</Grid.RowDefinitions>
 
-		<StackPanel Grid.ColumnSpan="2" Grid.Row="0" >
-			<ToolBar Width="800" >
-				<Menu>
-					<MenuItem Header="File">
+	<DockPanel>
+		<StackPanel DockPanel.Dock="Top" >
+			<ToolBar Width="Auto" Height="30" >
+				<Menu HorizontalAlignment="Center"
+						  VerticalAlignment="Center"
+						  HorizontalContentAlignment="Center"
+						  VerticalContentAlignment="Center">
+					<MenuItem Header="File" 
+							VerticalAlignment="Center" 
+							HorizontalAlignment="Center" 
+							HorizontalContentAlignment="Center"
+							VerticalContentAlignment="Center" 
+							Height="22">
 						<MenuItem Header="Reload Streams" x:Name="miReload" Click="miReload_Click"/>
 						<MenuItem Header="Exit" x:Name="miExit" Click="miExit_Click"/>
 					</MenuItem>
+					<TextBlock Text="WebDriver unloaded"
+					   Margin="0,2,0,0"
+					   x:Name="miWebDriverStatus"
+					   Foreground="Red" FontWeight="Bold" 
+					   VerticalAlignment="Center" 
+					   HorizontalAlignment="Center" 
+					   TextAlignment="Center"
+					   Height="16"></TextBlock>
 				</Menu>
 			</ToolBar>
 		</StackPanel>
 
-		<StackPanel Grid.RowSpan="3" Margin="0,29,0,0" >
-			<ListView x:Name="lvStreams" 
-                      HorizontalContentAlignment="Stretch" 
-                      ItemsSource="{x:Static globals:Globals.StreamList}"  
-                      SelectedItem="{x:Static globals:Globals.SelectedStream}">
+		<StackPanel DockPanel.Dock="Bottom" >
+			<StatusBar VerticalAlignment="Bottom" Height="26">
+				<StatusBarItem x:Name="sbiCurrentProcess" 
+                   Content="Waiting for action..."
+                   Height="26" 
+                   FontSize="13"
+                   VerticalAlignment="Center"  
+                   HorizontalAlignment="Left"
+                   VerticalContentAlignment="Top" Width="336" />
+				<StatusBarItem x:Name="sbiLastUpdate" 
+                   Content="Last Update: %s ago"
+                   Height="26" 
+                   Width="140"
+                   FontSize="13"
+                   VerticalAlignment="Top"  
+                   HorizontalAlignment="Right" />
+			</StatusBar>
+		</StackPanel>
+
+
+		<DockPanel Width="Auto" Height="Auto">
+			<ListView x:Name="lvStreams" Width="500" MaxWidth="540" DockPanel.Dock="Left" ItemsSource="{x:Static globals:Globals.StreamList}" SelectedItem="{x:Static globals:Globals.SelectedStream}" VerticalContentAlignment="Top">
 				<ListView.ItemTemplate>
 					<DataTemplate>
 						<WrapPanel>
@@ -79,29 +103,9 @@
 					</GridView>
 				</ListView.View>
 			</ListView>
-		</StackPanel>
+			<Image x:Name="imgPreview" DockPanel.Dock="Right"></Image>
+		</DockPanel>
 
-		<StackPanel Grid.Column="1" Margin="0,22,0,0" Grid.RowSpan="2">
-			<Image x:Name="imgPreview"></Image>
-		</StackPanel>
+	</DockPanel>
 
-		<StackPanel Grid.ColumnSpan="2" Grid.Row="2" Margin="0,2,0,0">
-			<StatusBar Grid.ColumnSpan="2" Width="NaN" Height="26">
-				<StatusBarItem x:Name="sbiCurrentProcess" 
-                   Content="Waiting for action..."
-                   Height="26" 
-                   FontSize="13"
-                   VerticalAlignment="Center"  
-                   HorizontalAlignment="Left"
-                   VerticalContentAlignment="Top" Width="336" />
-				<StatusBarItem x:Name="sbiLastUpdate" 
-                   Content="Last Update: %s ago"
-                   Height="26" 
-                   Width="140"
-                   FontSize="13"
-                   VerticalAlignment="Top"  
-                   HorizontalAlignment="Right" />
-			</StatusBar>
-		</StackPanel>
-	</Grid>
 </Window>
