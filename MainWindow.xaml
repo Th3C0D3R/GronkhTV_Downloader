@@ -9,98 +9,99 @@
         Title="GronkhTV Downloader" Height="340" Width="740"
         x:Name="frmMain"
         MinWidth="740"
-        MinHeight="340">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="24*"/>
-            <ColumnDefinition Width="13*"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="29*" />
-            <RowDefinition Height="275*" />
-            <RowDefinition Height="20*" />
-        </Grid.RowDefinitions>
+        MinHeight="340"
+		Loaded="frmMain_Loaded">
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="24*"/>
+			<ColumnDefinition Width="13*"/>
+		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="29*" />
+			<RowDefinition Height="265*" />
+			<RowDefinition Height="30*" />
+		</Grid.RowDefinitions>
 
-        <StackPanel Grid.ColumnSpan="2" Grid.Row="0" >
-            <ToolBar Width="800" >
-                <Menu>
-                    <MenuItem Header="File">
-                        <MenuItem Header="Reload Streams" x:Name="miReload" Click="miReload_Click"/>
-                        <MenuItem Header="Exit" x:Name="miExit" Click="miExit_Click"/>
-                    </MenuItem>
-                </Menu>
-            </ToolBar>
-        </StackPanel>
+		<StackPanel Grid.ColumnSpan="2" Grid.Row="0" >
+			<ToolBar Width="800" >
+				<Menu>
+					<MenuItem Header="File">
+						<MenuItem Header="Reload Streams" x:Name="miReload" Click="miReload_Click"/>
+						<MenuItem Header="Exit" x:Name="miExit" Click="miExit_Click"/>
+					</MenuItem>
+				</Menu>
+			</ToolBar>
+		</StackPanel>
 
-        <StackPanel Grid.RowSpan="3" Margin="0,29,0,0" >
-            <ListView x:Name="lvStreams" 
+		<StackPanel Grid.RowSpan="3" Margin="0,29,0,0" >
+			<ListView x:Name="lvStreams" 
                       HorizontalContentAlignment="Stretch" 
                       ItemsSource="{x:Static globals:Globals.StreamList}"  
                       SelectedItem="{x:Static globals:Globals.SelectedStream}">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <WrapPanel>
-                            <TextBlock Text="{Binding episode}" FontWeight="Bold" />
-                            <TextBlock Text="{Binding title}" FontWeight="Bold" />
-                            <TextBlock Text="{Binding quality}" FontWeight="Bold"/>
-                            <TextBlock Text="{Binding created_at, StringFormat=g}" FontWeight="Bold"/>
-                            <TextBlock Text="{Binding video_length, StringFormat=\{0:hh\\:mm\\:ss\}}" FontWeight="Bold"/>
-                        </WrapPanel>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Width="Auto">
-                            <GridViewColumn.Header>
-                                <TextBlock Text="Episode"/>
-                            </GridViewColumn.Header>
-                        </GridViewColumn>
-                        <GridViewColumn Width="Auto">
-                            <GridViewColumn.Header>
-                                <TextBlock Text="Title"/>
-                            </GridViewColumn.Header>
-                        </GridViewColumn>
-                        <GridViewColumn Width="Auto">
-                            <GridViewColumn.Header>
-                                <TextBlock Text="Quality"/>
-                            </GridViewColumn.Header>
-                        </GridViewColumn>
-                        <GridViewColumn Width="Auto">
-                            <GridViewColumn.Header>
-                                <TextBlock Text="Created"/>
-                            </GridViewColumn.Header>
-                        </GridViewColumn>
-                        <GridViewColumn Width="Auto">
-                            <GridViewColumn.Header>
-                                <TextBlock Text="Length"/>
-                            </GridViewColumn.Header>
-                        </GridViewColumn>
-                    </GridView>
-                </ListView.View>
-            </ListView>
-        </StackPanel>
+				<ListView.ItemTemplate>
+					<DataTemplate>
+						<WrapPanel>
+							<TextBlock Text="{Binding episode}" FontWeight="Bold" />
+							<TextBlock Text="{Binding title}" FontWeight="Bold" />
+							<TextBlock Text="{Binding quality}" FontWeight="Bold"/>
+							<TextBlock Text="{Binding created_at, StringFormat=g}" FontWeight="Bold"/>
+							<TextBlock Text="{Binding video_length, StringFormat=\{0:hh\\:mm\\:ss\}}" FontWeight="Bold"/>
+						</WrapPanel>
+					</DataTemplate>
+				</ListView.ItemTemplate>
+				<ListView.View>
+					<GridView>
+						<GridViewColumn Width="Auto">
+							<GridViewColumn.Header>
+								<TextBlock Text="Episode" FontSize="13"/>
+							</GridViewColumn.Header>
+						</GridViewColumn>
+						<GridViewColumn Width="Auto">
+							<GridViewColumn.Header>
+								<TextBlock Text="Title" FontSize="13"/>
+							</GridViewColumn.Header>
+						</GridViewColumn>
+						<GridViewColumn Width="Auto">
+							<GridViewColumn.Header>
+								<TextBlock Text="Quality" FontSize="13"/>
+							</GridViewColumn.Header>
+						</GridViewColumn>
+						<GridViewColumn Width="Auto">
+							<GridViewColumn.Header>
+								<TextBlock Text="Created" FontSize="13"/>
+							</GridViewColumn.Header>
+						</GridViewColumn>
+						<GridViewColumn Width="Auto">
+							<GridViewColumn.Header>
+								<TextBlock Text="Length" FontSize="13"/>
+							</GridViewColumn.Header>
+						</GridViewColumn>
+					</GridView>
+				</ListView.View>
+			</ListView>
+		</StackPanel>
 
-        <StackPanel Grid.Column="1" Margin="0,22,0,0" Grid.RowSpan="2">
-            <Image x:Name="imgPreview"></Image>
-        </StackPanel>
+		<StackPanel Grid.Column="1" Margin="0,22,0,0" Grid.RowSpan="2">
+			<Image x:Name="imgPreview"></Image>
+		</StackPanel>
 
-        <StackPanel Grid.ColumnSpan="2" Grid.Row="2" Margin="0,2,0,0">
-            <StatusBar Grid.ColumnSpan="2" Width="NaN">
-                <StatusBarItem x:Name="sbiCurrentProcess" 
+		<StackPanel Grid.ColumnSpan="2" Grid.Row="2" Margin="0,2,0,0">
+			<StatusBar Grid.ColumnSpan="2" Width="NaN" Height="26">
+				<StatusBarItem x:Name="sbiCurrentProcess" 
                    Content="Waiting for action..."
-                   Height="20" 
-                   FontSize="10"
+                   Height="26" 
+                   FontSize="13"
                    VerticalAlignment="Center"  
                    HorizontalAlignment="Left"
-                   VerticalContentAlignment="Top" />
-                <StatusBarItem x:Name="sbiLastUpdate" 
+                   VerticalContentAlignment="Top" Width="336" />
+				<StatusBarItem x:Name="sbiLastUpdate" 
                    Content="Last Update: %s ago"
-                   Height="20" 
+                   Height="26" 
                    Width="140"
-                   FontSize="10"
-                   VerticalAlignment="Center"  
+                   FontSize="13"
+                   VerticalAlignment="Top"  
                    HorizontalAlignment="Right" />
-            </StatusBar>
-        </StackPanel>
-    </Grid>
+			</StatusBar>
+		</StackPanel>
+	</Grid>
 </Window>
