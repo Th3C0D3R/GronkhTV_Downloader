@@ -1,24 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace GronkhTV_DL.classes
 {
-    public class Streams
+    public class Streams : INotifyPropertyChanged
     {
         public string? title { get; set; }
         public DateTime created_at { get; set; }
         public int episode { get; set; }
         public string? preview_url { get; set; }
         public int video_length { get; set; }
-        public Quality? quality { get; set; }
+        public Qualities Qualities { get; set; } = new();
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 
+    public class Qualities
+    {
+        public List<Quality> StreamQualities { get; set; } = [];
+
+        public override string ToString()
+        {
+            return $"{string.Join(", ",StreamQualities)}";
+        }
+    }
     public class Quality
     {
         public string quality { get; set; } = "";
+        public string url { get; set; } = "";
 
         public override string ToString()
         {
