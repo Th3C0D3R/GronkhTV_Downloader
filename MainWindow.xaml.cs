@@ -7,6 +7,14 @@ using Newtonsoft.Json;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Controls;
+using System.Diagnostics;
+using System.IO;
+using System.Windows.Input;
+using Path = System.IO.Path;
+using System;
+using System.Reflection;
+using GronkhTV_DL.dialog;
+using GronkhTV_DL.dialog.classes;
 
 namespace GronkhTV_DL
 {
@@ -15,11 +23,11 @@ namespace GronkhTV_DL
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
+
+		public MainWindow()
         {
             InitializeComponent();
-
-            AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
+			AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
         }
         private List<Video> CollectStreams()
         {
@@ -158,8 +166,51 @@ namespace GronkhTV_DL
             DeInitWebDriver();
             Environment.Exit(0);
         }
+		public void DownloadStream(object sender, RoutedEventArgs e)
+		{
+            var item = e.Source as MenuItem;
 
-        private void AutoResizeColumns(ListView listView)
+            if(item?.DataContext is Streams stream)
+            {
+
+                SelectQualityDialog sqdialog = new(stream.Qualities.StreamQualities);
+                if (sqdialog.ShowDialog() ?? false)
+                {
+                    string url = QData.SelectedQuality?.url ?? "";
+                    if (string.IsNullOrWhiteSpace(url)) return;
+
+					string exeDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "";
+                    string outputDir = Path.Combine(exeDir, "output");
+                    Directory.CreateDirectory(outputDir);
+                    outputDir = Path.Combine(outputDir, stream.episode.ToString() + ".mp4");
+					if (File.Exists(exeDir))
+					{
+						ProcessStartInfo startInfo = new ProcessStartInfo
+						{
+							Arguments = $"--hls-prefer-native -o \"{outputDir}\" --limit-rate 999G --http-chunk-size 10M " + url,
+							FileName = Path.Combine(exeDir, "youtubedl", "youtube-dl.exe"),
+							RedirectStandardOutput = true,
+							RedirectStandardError = true,
+							UseShellExecute = false,
+							CreateNoWindow = true
+						};
+
+						using Process process = new() { StartInfo = startInfo };
+
+						process.OutputDataReceived += (sender, e) => Console.WriteLine(e.Data);
+						process.ErrorDataReceived += (sender, e) => Console.WriteLine(e.Data);
+
+						process.Start();
+						process.BeginOutputReadLine();
+						process.BeginErrorReadLine();
+						process.WaitForExit();
+					}
+				}
+                
+			}			
+		}
+
+		private void AutoResizeColumns(ListView listView)
         {
             GridView gridView = listView.View as GridView;
 
@@ -212,9 +263,5 @@ namespace GronkhTV_DL
             { }
         }
 
-        private void MenuItem_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
     }
 }
