@@ -6,6 +6,7 @@ using OpenQA.Selenium.Chrome;
 using Newtonsoft.Json;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using System.Windows.Controls;
 
 namespace GronkhTV_DL
 {
@@ -111,10 +112,15 @@ namespace GronkhTV_DL
                 Dispatcher.Invoke(() =>
                 {
                     StreamList.Add(strm);
-                    pbProgress.Value += Math.Floor((double)(100 / videos.Count));
+                    pbProgress.Value += Math.Ceiling((double)(100 / videos.Count));
                     progressText.Text = $"{pbProgress.Value}%";
                 });
             }
+            Dispatcher.Invoke(() =>
+            {
+                pbProgress.Value = 100;
+                progressText.Text = $"{pbProgress.Value}%";
+            });
         }
         private void frmMain_Loaded(object sender, RoutedEventArgs e)
         {
@@ -125,8 +131,22 @@ namespace GronkhTV_DL
             {
                 Dispatcher.Invoke(() => sbiCurrentProcess.Foreground = Brushes.Orange);
                 Dispatcher.Invoke(() => sbiCurrentProcess.Content = "Loading streams...");
+
                 var vids = CollectStreams();
                 FillStreamList(vids);
+
+                Dispatcher.Invoke(() => sbiCurrentProcess.Foreground = Brushes.Black);
+                Dispatcher.Invoke(() => sbiCurrentProcess.Content = "Waiting for action...");
+                Dispatcher.Invoke(() => AutoResizeColumns(lvStreams)); 
+                Dispatcher.Invoke(() =>
+                {
+                    AutoResizeColumns(lvStreams);
+                    sbiCurrentProcess.Foreground = Brushes.Black;
+                    sbiCurrentProcess.Content = "Waiting for action...";
+                    pbProgress.Value = 0;
+                    progressText.Text = $"{pbProgress.Value}%";
+                });
+
             });
         }
         private void miReload_Click(object sender, RoutedEventArgs e)
@@ -139,7 +159,20 @@ namespace GronkhTV_DL
             Environment.Exit(0);
         }
 
+        private void AutoResizeColumns(ListView listView)
+        {
+            GridView gridView = listView.View as GridView;
 
+            if (gridView != null)
+            {
+                foreach (var column in gridView.Columns)
+                {
+                    // Set column width to NaN and then measure it to auto-adjust
+                    column.Width = double.NaN;
+                    column.Width = column.ActualWidth;
+                }
+            }
+        }
         private void CurrentDomain_ProcessExit(object? sender, EventArgs e)
         {
             DeInitWebDriver();

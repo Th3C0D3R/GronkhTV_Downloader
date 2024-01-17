@@ -4,7 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GronkhTV_DL"
-        xmlns:globals="clr-namespace:GronkhTV_DL.classes"
+        xmlns:classes="clr-namespace:GronkhTV_DL.classes"
+        xmlns:glob="clr-namespace:System.Globalization;assembly=mscorlib"
         mc:Ignorable="d"
         Title="GronkhTV Downloader" Height="340" Width="740"
         x:Name="frmMain"
@@ -12,7 +13,9 @@
         MinHeight="340"
 		Loaded="frmMain_Loaded">
    <Window.Resources>
-      <globals:Streams x:Key="StreamList"></globals:Streams>
+      <classes:TimeSpanConverter x:Key="TimeSpanConverter" />
+      <classes:DateTimeConverter x:Key="DateTimeConverter"/>
+      <classes:Streams x:Key="StreamList"></classes:Streams>
       <ControlTemplate x:Key="EmptyListBoxTemplate">
          <TextBlock Text="No Streams found or loaded" FontSize="22" TextAlignment="Center" VerticalAlignment="Center" />
       </ControlTemplate>
@@ -86,8 +89,8 @@
          <ListView x:Name="lvStreams" 
                    DockPanel.Dock="Left" 
                    DataContext="{Binding Source={StaticResource StreamList}}"
-                   ItemsSource="{x:Static globals:Globals.StreamList}" 
-                   SelectedItem="{x:Static globals:Globals.SelectedStream}" 
+                   ItemsSource="{x:Static classes:Globals.StreamList}" 
+                   SelectedItem="{x:Static classes:Globals.SelectedStream}" 
                    VerticalContentAlignment="Top">
             <ListView.Style>
                <Style TargetType="ListView">
@@ -95,7 +98,7 @@
                      <DataTrigger Value="{x:Null}" Binding="{Binding Source={StaticResource StreamList}}">
                         <Setter Property="Template" Value="{StaticResource EmptyListBoxTemplate}" />
                      </DataTrigger>
-                     <DataTrigger Value="0" Binding="{Binding Source={x:Static globals:Globals.StreamList}, Path=Count}">
+                     <DataTrigger Value="0" Binding="{Binding Source={x:Static classes:Globals.StreamList}, Path=Count}">
                         <Setter Property="Template" Value="{StaticResource EmptyListBoxTemplate}" />
                      </DataTrigger>
                   </Style.Triggers>
@@ -118,12 +121,12 @@
                         <TextBlock Text="Quality" FontSize="13"/>
                      </GridViewColumn.Header>
                   </GridViewColumn>
-                  <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=created_at, StringFormat=g}">
+                  <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding created_at, Converter={StaticResource DateTimeConverter}}">
                      <GridViewColumn.Header>
                         <TextBlock Text="Created" FontSize="13"/>
                      </GridViewColumn.Header>
                   </GridViewColumn>
-                  <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=video_length, StringFormat=\{0:hh\\:mm\\:ss\}}">
+                  <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=video_length, Converter={StaticResource TimeSpanConverter}}">
                      <GridViewColumn.Header>
                         <TextBlock Text="Length" FontSize="13"/>
                      </GridViewColumn.Header>
