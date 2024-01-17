@@ -15,8 +15,6 @@ namespace GronkhTV_DL.dialog
 	public partial class SelectQualityDialog : Window
 	{
 
-		
-
 		public SelectQualityDialog(List<Quality> q)
 		{
 			InitializeComponent();
