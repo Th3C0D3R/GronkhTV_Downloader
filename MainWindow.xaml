@@ -133,6 +133,17 @@
                   </GridViewColumn>
                </GridView>
             </ListView.View>
+            <ListView.ItemContainerStyle>
+               <Style TargetType="ListViewItem">
+                  <Setter Property="ContextMenu">
+                     <Setter.Value>
+                        <ContextMenu>
+                           <MenuItem Header="Download" Click="MenuItem_Click" />
+                        </ContextMenu>
+                     </Setter.Value>
+                  </Setter>
+               </Style>
+            </ListView.ItemContainerStyle>
          </ListView>
       </DockPanel>
 
