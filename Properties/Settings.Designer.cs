@@ -37,7 +37,7 @@ namespace GronkhTV_DL.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("490")]
         public int Width {
             get {
                 return ((int)(this["Width"]));
@@ -56,18 +56,6 @@ namespace GronkhTV_DL.Properties {
             }
             set {
                 this["Height"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("490")]
-        public string Einstellung {
-            get {
-                return ((string)(this["Einstellung"]));
-            }
-            set {
-                this["Einstellung"] = value;
             }
         }
     }

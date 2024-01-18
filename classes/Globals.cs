@@ -12,108 +12,123 @@ using System.Windows.Data;
 
 namespace GronkhTV_DL.classes
 {
-    public static class Globals
-    {
-        public static IWebDriver webDriver;
-        public static IJavaScriptExecutor jsExecuter;
+	public static class Globals
+	{
+		public static IWebDriver webDriver;
+		public static IJavaScriptExecutor jsExecuter;
 
-        public static bool StreamsLoaded = false;
-        public static bool SingleStreamLoaded = false;
+		public static bool StreamsLoaded { get; set; } = false;
+		public static bool SingleStreamLoaded { get; set; } = false;
 
-        private static readonly ObservableCollection<Streams> streamList = [];
-        public static ObservableCollection<Streams> StreamList
-        {
-            get { return streamList; }
-        }
-        public static Streams SelectedStream = new();
+		private static readonly ObservableCollection<Streams> streamList = [];
+		public static ObservableCollection<Streams> StreamList
+		{
+			get { return streamList; }
+		}
+		public static Streams SelectedStream { get; set; } = new();
 
-        public static TimeSpan Elapsed 
-        { 
-            get {
-                return DateTime.Now - Settings.Default.lastUpdate;
-            } 
-        }
+		public static string FormatElapsedTime(TimeSpan elapsed)
+		{
+			string[] labels = ["day", "hour", "minute", "second"];
+			int[] values = [elapsed.Days, elapsed.Hours, elapsed.Minutes, elapsed.Seconds];
 
-        public static int SelVid = -1;
+			for (int i = 0; i < values.Length; i++)
+			{
+				if (values[i] > 0)
+				{
+					return $"{values[i]} {labels[i]}{(values[i] > 1 ? "s" : "")}";
+				}
+			}
 
-        public static TimeSpan GetUpdateInterval(TimeSpan updateInterval)
-        {
-            if(updateInterval.Minutes is > 0 and < 60) return TimeSpan.FromMinutes(1);
-            else if(updateInterval.Hours is > 0 and < 24) return TimeSpan.FromHours(1);
-            else if(updateInterval.Days is > 0 and < 365) return TimeSpan.FromDays(1);
-            else return TimeSpan.FromSeconds(1);
-        }
-        public static string FormatElapsedTime(TimeSpan elapsed)
-        {
-            string[] labels = ["day", "hour", "minute", "second"];
-            int[] values = [elapsed.Days, elapsed.Hours, elapsed.Minutes, elapsed.Seconds];
+			return "0 seconds";
+		}
 
-            for (int i = 0; i < values.Length; i++)
-            {
-                if (values[i] > 0)
-                {
-                    return $"{values[i]} {labels[i]}{(values[i] > 1 ? "s" : "")}";
-                }
-            }
+		private static double _progressValue = 0.0;
+		private static string _currentAction = "Waiting for action...";
 
-            return "0 seconds";
-        }
+		public static double ProgressValue
+		{
+			get { return _progressValue; }
+			set
+			{
+				if (_progressValue != value)
+				{
+					_progressValue = value;
+					OnStaticPropertyChanged(nameof(ProgressValue));
+				}
+			}
+		}
+		public static string CurrentAction
+		{
+			get { return _currentAction; }
+			set
+			{
+				if (_currentAction != value)
+				{
+					_currentAction = value;
+					OnStaticPropertyChanged(nameof(CurrentAction));
+				}
+			}
+		}
 
-    }
 
-    public class ElapsedWrapper : INotifyPropertyChanged
-    {
-        private static TimeSpan _elapsed;
+		public static event PropertyChangedEventHandler? StaticPropertyChanged;
+		private static void OnStaticPropertyChanged(string propertyName)
+		{
+			StaticPropertyChanged?.Invoke(null, new PropertyChangedEventArgs(propertyName));
+		}
 
-        public TimeSpan Elapsed
-        {
-            get
-            {
-                return _elapsed;
-            }
-            set
-            {
-                if (_elapsed != value)
-                {
-                    _elapsed = value;
-                    OnPropertyChanged(nameof(Elapsed));
-                }
-            }
-        }
+	}
 
-        public event PropertyChangedEventHandler PropertyChanged;
+	public class ElapsedWrapper : INotifyPropertyChanged
+	{
+		private static TimeSpan _elapsed = TimeSpan.Zero;
 
-        private void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+		public TimeSpan Elapsed
+		{
+			get
+			{
+				return _elapsed;
+			}
+			set
+			{
+				if (_elapsed != value)
+				{
+					_elapsed = value;
+					OnPropertyChanged(nameof(Elapsed));
+				}
+			}
+		}
 
-        // Singleton pattern
-        private static ElapsedWrapper _instance;
-
-        public static ElapsedWrapper Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new ElapsedWrapper();
-                }
-                return _instance;
-            }
-        }
-        public ElapsedWrapper()
-        {
-            var timer = new System.Windows.Threading.DispatcherTimer();
-            timer.Tick += Timer_Tick;
-            timer.Interval = TimeSpan.FromSeconds(1); // Update every second
-            timer.Start();
-        }
-
-        private void Timer_Tick(object sender, EventArgs e)
-        {
-            Elapsed = DateTime.Now - Settings.Default.lastUpdate;
-        }
-    }
+		public event PropertyChangedEventHandler PropertyChanged;
+		private void OnPropertyChanged(string propertyName)
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
+		// Singleton pattern
+		private static ElapsedWrapper _instance;
+		public static ElapsedWrapper Instance
+		{
+			get
+			{
+				if (_instance == null)
+				{
+					_instance = new ElapsedWrapper();
+				}
+				return _instance;
+			}
+		}
+		public ElapsedWrapper()
+		{
+			var timer = new System.Windows.Threading.DispatcherTimer();
+			timer.Tick += Timer_Tick;
+			timer.Interval = TimeSpan.FromSeconds(1); // Update every second
+			timer.Start();
+		}
+		private void Timer_Tick(object sender, EventArgs e)
+		{
+			Elapsed = DateTime.Now - Settings.Default.lastUpdate;
+		}
+	}
 
 }

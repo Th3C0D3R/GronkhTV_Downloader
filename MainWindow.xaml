@@ -5,7 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GronkhTV_DL"
         xmlns:classes="clr-namespace:GronkhTV_DL.classes"
-        xmlns:glob="clr-namespace:System.Globalization;assembly=mscorlib"
         mc:Ignorable="d"
         Title="GronkhTV Downloader" Height="350" Width="490"
         x:Name="frmMain"
@@ -13,7 +12,6 @@
         MinHeight="140"
 		Loaded="frmMain_Loaded"
         SizeChanged="frmMain_SizeChanged"
-        Closed="Window_Closed"
         >
     <Window.Resources>
         <classes:TimeSpanConverter x:Key="TimeSpanConverter" />
@@ -41,24 +39,32 @@
 						  VerticalAlignment="Center"
 						  HorizontalContentAlignment="Center"
 						  VerticalContentAlignment="Center">
-                    <MenuItem Header="File" 
+					<MenuItem Header="File" 
 							VerticalAlignment="Center" 
 							HorizontalAlignment="Center" 
 							HorizontalContentAlignment="Center"
 							VerticalContentAlignment="Center" 
 							Height="22">
-                        <MenuItem Header="Reload Streams" x:Name="miReload" Click="miReload_Click"/>
-                        <MenuItem Header="Exit" x:Name="miExit" Click="miExit_Click"/>
-                    </MenuItem>
-                    <TextBlock Text="WebDriver unloaded"
-					   Margin="0,2,0,0"
-					   x:Name="miWebDriverStatus"
-					   Foreground="Red" FontWeight="Bold" 
-					   VerticalAlignment="Stretch" 
-					   HorizontalAlignment="Stretch" 
-					   TextAlignment="Center"
-					   Height="16"></TextBlock>
-                </Menu>
+						<MenuItem Header="Reload Streams" x:Name="miReload" Click="miReload_Click"/>
+						<MenuItem Header="Exit" x:Name="miExit" Click="miExit_Click"/>
+					</MenuItem>
+					<TextBlock Text="WebDriver unloaded"
+							   Margin="0,2,0,0"
+							   x:Name="miWebDriverStatus"
+							   Foreground="Red" FontWeight="Bold" 
+							   VerticalAlignment="Stretch" 
+							   HorizontalAlignment="Stretch" 
+							   TextAlignment="Center"
+							   Height="16"></TextBlock>
+					<Button	x:Name="CancelDownload" 
+						Content="Cancel Download"
+							Background="Transparent"
+							BorderThickness="0"
+							Foreground="Red"
+							Margin="0 2 0 0"
+							FontWeight="Black"
+							Visibility="Hidden"/>
+				</Menu>
             </ToolBar>
         </StackPanel>
 
@@ -72,17 +78,16 @@
                             <ColumnDefinition Width="150"/>
                         </Grid.ColumnDefinitions>
 
-                        <ProgressBar x:Name="pbProgress" Grid.Column="0" />
+						<ProgressBar x:Name="pbProgress" Value="{Binding Path=(classes:Globals.ProgressValue), UpdateSourceTrigger=PropertyChanged}" Grid.Column="0" />
                         <TextBlock Text="{Binding ElementName=pbProgress, Path=Value, StringFormat={}{0}%}" Height="16" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
 
-                        <TextBlock x:Name="sbiCurrentProcess" 
-                                   Text="Waiting for action..." 
+						<TextBlock x:Name="sbiCurrentProcess" 
+                                   Text="{Binding Path=(classes:Globals.CurrentAction), UpdateSourceTrigger=PropertyChanged}" 
                                    Grid.Column="1" 
                                    VerticalAlignment="Center" 
                                    HorizontalAlignment="Left"
                                    Padding="5 0 5 0"/>
-                        <!--Text="{Binding Source={x:Static classes:Globals.Elapsed}, Converter={StaticResource ElabsedConverter}}"-->
-                        <TextBlock x:Name="sbiLastUpdate" Text="{Binding Elapsed, Converter={StaticResource ElabsedConverter}}"  Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+						<TextBlock x:Name="sbiLastUpdate" Text="{Binding Elapsed, Converter={StaticResource ElabsedConverter}}"  Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                     </Grid>
                 </StatusBarItem>
             </StatusBar>
@@ -90,56 +95,57 @@
 
 
         <DockPanel Width="Auto" Height="Auto">
-            <ListView x:Name="lvStreams" 
+			<ListView x:Name="lvStreams" 
                    DockPanel.Dock="Left" 
                    DataContext="{Binding Source={StaticResource StreamList}}"
                    ItemsSource="{x:Static classes:Globals.StreamList}" 
                    SelectedItem="{x:Static classes:Globals.SelectedStream}"
                    VerticalContentAlignment="Top"
+					  IsEnabled="True"
 				   ItemContainerStyle="{StaticResource styleContainer}">
-                <ListView.Style>
-                    <Style TargetType="ListView">
-                        <Style.Triggers>
-                            <DataTrigger Value="{x:Null}" Binding="{Binding Source={StaticResource StreamList}}">
-                                <Setter Property="Template" Value="{StaticResource EmptyListBoxTemplate}" />
-                            </DataTrigger>
-                            <DataTrigger Value="0" Binding="{Binding Source={x:Static classes:Globals.StreamList}, Path=Count}">
-                                <Setter Property="Template" Value="{StaticResource EmptyListBoxTemplate}" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </ListView.Style>
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=episode}">
-                            <GridViewColumn.Header>
-                                <TextBlock Text="Episode" FontSize="13"/>
-                            </GridViewColumn.Header>
-                        </GridViewColumn>
-                        <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=title}">
-                            <GridViewColumn.Header>
-                                <TextBlock Text="Title" FontSize="13"/>
-                            </GridViewColumn.Header>
-                        </GridViewColumn>
-                        <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=Qualities}">
-                            <GridViewColumn.Header>
-                                <TextBlock Text="Quality" FontSize="13"/>
-                            </GridViewColumn.Header>
-                        </GridViewColumn>
-                        <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding created_at, Converter={StaticResource DateTimeConverter}}">
-                            <GridViewColumn.Header>
-                                <TextBlock Text="Created" FontSize="13"/>
-                            </GridViewColumn.Header>
-                        </GridViewColumn>
-                        <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=video_length, Converter={StaticResource TimeSpanConverter}}">
-                            <GridViewColumn.Header>
-                                <TextBlock Text="Length" FontSize="13"/>
-                            </GridViewColumn.Header>
-                        </GridViewColumn>
-                    </GridView>
-                </ListView.View>
-            </ListView>
-        </DockPanel>
+				<ListView.Style>
+					<Style TargetType="ListView">
+						<Style.Triggers>
+							<DataTrigger Value="{x:Null}" Binding="{Binding Source={StaticResource StreamList}}">
+								<Setter Property="Template" Value="{StaticResource EmptyListBoxTemplate}" />
+							</DataTrigger>
+							<DataTrigger Value="0" Binding="{Binding Source={x:Static classes:Globals.StreamList}, Path=Count}">
+								<Setter Property="Template" Value="{StaticResource EmptyListBoxTemplate}" />
+							</DataTrigger>
+						</Style.Triggers>
+					</Style>
+				</ListView.Style>
+				<ListView.View>
+					<GridView>
+						<GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=episode}">
+							<GridViewColumn.Header>
+								<TextBlock Text="Episode" FontSize="13"/>
+							</GridViewColumn.Header>
+						</GridViewColumn>
+						<GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=title}">
+							<GridViewColumn.Header>
+								<TextBlock Text="Title" FontSize="13"/>
+							</GridViewColumn.Header>
+						</GridViewColumn>
+						<GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=Qualities}">
+							<GridViewColumn.Header>
+								<TextBlock Text="Quality" FontSize="13"/>
+							</GridViewColumn.Header>
+						</GridViewColumn>
+						<GridViewColumn Width="Auto" DisplayMemberBinding="{Binding created_at, Converter={StaticResource DateTimeConverter}}">
+							<GridViewColumn.Header>
+								<TextBlock Text="Created" FontSize="13"/>
+							</GridViewColumn.Header>
+						</GridViewColumn>
+						<GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Path=video_length, Converter={StaticResource TimeSpanConverter}}">
+							<GridViewColumn.Header>
+								<TextBlock Text="Length" FontSize="13"/>
+							</GridViewColumn.Header>
+						</GridViewColumn>
+					</GridView>
+				</ListView.View>
+			</ListView>
+		</DockPanel>
 
     </DockPanel>
 

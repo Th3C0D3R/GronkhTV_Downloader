@@ -6,13 +6,10 @@
       <Value Profile="(Default)">2024-01-18</Value>
     </Setting>
     <Setting Name="Width" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">0</Value>
+      <Value Profile="(Default)">490</Value>
     </Setting>
     <Setting Name="Height" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">350</Value>
-    </Setting>
-    <Setting Name="Einstellung" Type="System.String" Scope="User">
-      <Value Profile="(Default)">490</Value>
     </Setting>
   </Settings>
 </SettingsFile>
