@@ -6,17 +6,31 @@
         xmlns:classes="clr-namespace:GronkhTV_DL.classes"
         xmlns:qclasses="clr-namespace:GronkhTV_DL.dialog.classes"
         mc:Ignorable="d"
-        Title="Select Stream Quality" Height="95" Width="310" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" WindowStyle="ToolWindow" MinHeight="95" MaxHeight="95" MinWidth="310" MaxWidth="310">
-	<Window.Resources>
-		<classes:Qualities x:Key="Qualis"></classes:Qualities>
-	</Window.Resources>
-	<Grid>
-		<ComboBox x:Name="cbQuality" HorizontalAlignment="Left" Margin="10,45,0,0" VerticalAlignment="Top" Width="185" Height="24" MinWidth="185" MaxWidth="185" MinHeight="24" MaxHeight="24"
-					DataContext="{Binding Source={StaticResource Qualis}}"
+        Title="Select Stream Quality" 
+        Height="120" Width="295" 
+        ShowInTaskbar="False" 
+        WindowStartupLocation="CenterOwner" 
+        ResizeMode="NoResize" 
+        WindowStyle="ToolWindow" 
+        MinHeight="95"
+        MinWidth="310"
+        SizeToContent="WidthAndHeight">
+    <Window.Resources>
+        <classes:Quality x:Key="Qualis"></classes:Quality>
+    </Window.Resources>
+    <Grid>
+        <StackPanel>
+            <Label x:Name="label" Content="Available Stream Quality:" Padding="10 10 0 10" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="275"/>
+            <StackPanel Orientation="Horizontal" Margin="10 0 10 50">
+                <ComboBox x:Name="cbQuality" HorizontalAlignment="Left" VerticalAlignment="Center" Width="185" Height="24" MinWidth="185" MaxWidth="185" MinHeight="24" MaxHeight="24"
 					ItemsSource="{x:Static qclasses:QData.ListQualities}" 
 					SelectedItem="{x:Static qclasses:QData.SelectedQuality}"
-				  />
-		<Label x:Name="label" Content="Available Stream Quality:" HorizontalAlignment="Left" Margin="10,14,0,0" VerticalAlignment="Top" Width="285"/>
-		<Button x:Name="btnSelectQuality" Content="Download" HorizontalAlignment="Left" Margin="210,45,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.252,0.703" Width="85" Height="24" Click="btnSelectQuality_Click"/>
-	</Grid>
+                    SelectedValue="{Binding Source={x:Static qclasses:QData.SelectedQuality}, Path=url}"
+                    SelectedValuePath="url"
+                    DisplayMemberPath="quality"
+                   />
+                <Button x:Name="btnSelectQuality" Content="Download" HorizontalAlignment="Right" Margin="5 0 0 0" VerticalAlignment="Top" Width="85" Height="24" Click="btnSelectQuality_Click"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
 </Window>

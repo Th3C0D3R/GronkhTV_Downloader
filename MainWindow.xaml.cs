@@ -15,6 +15,9 @@ using System;
 using System.Reflection;
 using GronkhTV_DL.dialog;
 using GronkhTV_DL.dialog.classes;
+using System.Windows.Threading;
+using GronkhTV_DL.Properties;
+using System.Runtime.InteropServices;
 
 namespace GronkhTV_DL
 {
@@ -23,17 +26,19 @@ namespace GronkhTV_DL
     /// </summary>
     public partial class MainWindow : Window
     {
-
-		public MainWindow()
+        private DispatcherTimer timer;
+        public MainWindow()
         {
             InitializeComponent();
-			AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
+            Width = Settings.Default.Width;
+            Height = Settings.Default.Height;
+            AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
         }
         private List<Video> CollectStreams()
         {
             Dispatcher.Invoke(() =>
             {
-                sbiCurrentProcess.Content = "Loading Website...";
+                sbiCurrentProcess.Text = "Loading Website...";
                 pbProgress.Value = 0;
             });
             try
@@ -47,7 +52,7 @@ namespace GronkhTV_DL
 
                 Dispatcher.Invoke(() =>
                 {
-                    sbiCurrentProcess.Content = "Deserialize result...";
+                    sbiCurrentProcess.Text = "Deserialize result...";
                     pbProgress.Value = 35;
                 });
 
@@ -56,7 +61,7 @@ namespace GronkhTV_DL
 
                 Dispatcher.Invoke(() =>
                 {
-                    sbiCurrentProcess.Content = "Ordering streamlist";
+                    sbiCurrentProcess.Text = "Ordering streamlist";
                     pbProgress.Value = 70;
                 });
 
@@ -66,7 +71,7 @@ namespace GronkhTV_DL
                 StreamsLoaded = true;
                 Dispatcher.Invoke(() =>
                 {
-                    sbiCurrentProcess.Content = "Finish loading streams!";
+                    sbiCurrentProcess.Text = "Finish loading streams!";
                     sbiCurrentProcess.Foreground = Brushes.Green;
                     pbProgress.Value = 100;
                 });
@@ -82,7 +87,7 @@ namespace GronkhTV_DL
             Dispatcher.Invoke(() =>
             {
                 sbiCurrentProcess.Foreground = Brushes.Orange;
-                sbiCurrentProcess.Content = "Generating detailed Streamlist...";
+                sbiCurrentProcess.Text = "Generating detailed Streamlist...";
                 pbProgress.Value = 0;
                 StreamList.Clear();
             });
@@ -121,41 +126,46 @@ namespace GronkhTV_DL
                 {
                     StreamList.Add(strm);
                     pbProgress.Value += Math.Ceiling((double)(100 / videos.Count));
-                    progressText.Text = $"{pbProgress.Value}%";
                 });
             }
             Dispatcher.Invoke(() =>
             {
                 pbProgress.Value = 100;
-                progressText.Text = $"{pbProgress.Value}%";
             });
         }
         private void frmMain_Loaded(object sender, RoutedEventArgs e)
         {
             InitWebDriver();
             DataContext = this;
-            sbiCurrentProcess.Content = "Waiting for action...";
+            sbiCurrentProcess.Text = "Waiting for action...";
+
+            sbiLastUpdate.DataContext = new ElapsedWrapper();
+
             Task t = Task.Factory.StartNew(() =>
             {
                 Dispatcher.Invoke(() => sbiCurrentProcess.Foreground = Brushes.Orange);
-                Dispatcher.Invoke(() => sbiCurrentProcess.Content = "Loading streams...");
+                Dispatcher.Invoke(() => sbiCurrentProcess.Text = "Loading streams...");
 
                 var vids = CollectStreams();
                 FillStreamList(vids);
 
-                Dispatcher.Invoke(() => sbiCurrentProcess.Foreground = Brushes.Black);
-                Dispatcher.Invoke(() => sbiCurrentProcess.Content = "Waiting for action...");
-                Dispatcher.Invoke(() => AutoResizeColumns(lvStreams)); 
+                Settings.Default.lastUpdate = DateTime.Now;
+                Settings.Default.Save();
+
                 Dispatcher.Invoke(() =>
                 {
-                    AutoResizeColumns(lvStreams);
                     sbiCurrentProcess.Foreground = Brushes.Black;
-                    sbiCurrentProcess.Content = "Waiting for action...";
+                    sbiCurrentProcess.Text = "Waiting for action...";
                     pbProgress.Value = 0;
-                    progressText.Text = $"{pbProgress.Value}%";
                 });
 
             });
+        }
+        private void frmMain_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            Settings.Default.Width = (int)Width;
+            Settings.Default.Height = (int)Height;
+            Settings.Default.Save();
         }
         private void miReload_Click(object sender, RoutedEventArgs e)
         {
@@ -166,71 +176,89 @@ namespace GronkhTV_DL
             DeInitWebDriver();
             Environment.Exit(0);
         }
-		public void DownloadStream(object sender, RoutedEventArgs e)
-		{
+        public void DownloadStream(object sender, RoutedEventArgs e)
+        {
             var item = e.Source as MenuItem;
 
-            if(item?.DataContext is Streams stream)
+            if (item?.DataContext is Streams stream)
             {
-
-                SelectQualityDialog sqdialog = new(stream.Qualities.StreamQualities);
+                if (stream.Qualities.StreamQualities.Count <= 0) return;
+                SelectQualityDialog sqdialog = new(stream.Qualities.StreamQualities)
+                { Owner = this };
                 if (sqdialog.ShowDialog() ?? false)
                 {
                     string url = QData.SelectedQuality?.url ?? "";
                     if (string.IsNullOrWhiteSpace(url)) return;
 
-					string exeDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "";
+                    string exeDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "";
                     string outputDir = Path.Combine(exeDir, "output");
                     Directory.CreateDirectory(outputDir);
                     outputDir = Path.Combine(outputDir, stream.episode.ToString() + ".mp4");
-					if (File.Exists(exeDir))
-					{
-						ProcessStartInfo startInfo = new ProcessStartInfo
-						{
-							Arguments = $"--hls-prefer-native -o \"{outputDir}\" --limit-rate 999G --http-chunk-size 10M " + url,
-							FileName = Path.Combine(exeDir, "youtubedl", "youtube-dl.exe"),
-							RedirectStandardOutput = true,
-							RedirectStandardError = true,
-							UseShellExecute = false,
-							CreateNoWindow = true
-						};
+                    exeDir = Path.Combine(exeDir, "youtubedl", "youtube-dl.exe");
+                    if (File.Exists(exeDir))
+                    {
+                        ProcessStartInfo startInfo = new ProcessStartInfo
+                        {
+                            Arguments = $"--hls-prefer-native -o \"{outputDir}\" --limit-rate 999G --http-chunk-size 10M " + url,
+                            FileName = exeDir,
+                            RedirectStandardOutput = true,
+                            RedirectStandardError = false,
+                            UseShellExecute = false,
+                            CreateNoWindow = true
+                        };
 
-						using Process process = new() { StartInfo = startInfo };
+                        using Process process = new() { StartInfo = startInfo };
 
-						process.OutputDataReceived += (sender, e) => Console.WriteLine(e.Data);
-						process.ErrorDataReceived += (sender, e) => Console.WriteLine(e.Data);
+                        process.OutputDataReceived += new((sender, e) =>
+                        {
+                            if (e.Data == null) return;
 
-						process.Start();
-						process.BeginOutputReadLine();
-						process.BeginErrorReadLine();
-						process.WaitForExit();
-					}
-				}
-                
-			}			
-		}
+                            var splittedString = e.Data.Split([' ', '%']).ToList().FindAll(j => !string.IsNullOrWhiteSpace(j));
+                            if (splittedString.Count <= 0 || splittedString.Count <= 4) return;
 
-		private void AutoResizeColumns(ListView listView)
-        {
-            GridView gridView = listView.View as GridView;
+                            if (splittedString[1] == "100" && splittedString[4] == "in")
+                            {
+                                sbiCurrentProcess.Dispatcher.Invoke(() => sbiCurrentProcess.Text = $"Download finished! Duration: {splittedString[5]}");
+                                pbProgress.Dispatcher.Invoke(() => pbProgress.Value = 0);
+                            }
+                            else if (splittedString[0] == "[download]" && splittedString[2] == "of")
+                            {
+                                if (double.TryParse(splittedString[1], out double progress))
+                                {
+                                    pbProgress.Dispatcher.Invoke(() => pbProgress.Value = progress);
 
-            if (gridView != null)
-            {
-                foreach (var column in gridView.Columns)
-                {
-                    // Set column width to NaN and then measure it to auto-adjust
-                    column.Width = double.NaN;
-                    column.Width = column.ActualWidth;
+                                }
+                                if (splittedString.Count == 8)
+                                {
+                                    if (!string.IsNullOrWhiteSpace(splittedString[7]))
+                                    {
+                                        sbiCurrentProcess.Dispatcher.Invoke(() => sbiCurrentProcess.Text = $"Downloading stream... {splittedString[6]}: {splittedString[7]}");
+                                    }
+                                }
+                            }
+                        });
+                        //process.ErrorDataReceived += ReceiveData;
+
+                        process.Start();
+                        process.BeginOutputReadLine();
+                    }
                 }
+
             }
         }
+        private void Window_Closed(object sender, EventArgs e)
+        {
+
+        }
+
+
         private void CurrentDomain_ProcessExit(object? sender, EventArgs e)
         {
             DeInitWebDriver();
         }
         private void InitWebDriver()
         {
-            sbiCurrentProcess.Content = "Initialize WebDriver...";
+            sbiCurrentProcess.Text = "Initialize WebDriver...";
 
             try
             {

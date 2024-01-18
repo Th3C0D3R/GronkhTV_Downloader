@@ -16,15 +16,18 @@ namespace GronkhTV_DL.dialog
 	{
 
 		public SelectQualityDialog(List<Quality> q)
-		{
-			InitializeComponent();
-			DataContext = this;
-			ListQualities = q;
+        {
+            ListQualities = q;
+			SelectedQuality = q.FirstOrDefault();
+            InitializeComponent();
+			Topmost = true;
 		}
 
 		private void btnSelectQuality_Click(object sender, RoutedEventArgs e)
 		{
-
+			DialogResult = true;
+			SelectedQuality = (Quality)cbQuality.SelectedItem;
+			Close();
 		}
 	}
 
