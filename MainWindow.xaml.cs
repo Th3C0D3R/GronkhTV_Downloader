@@ -1,31 +1,30 @@
 ﻿using GronkhTV_DL.classes;
-using static GronkhTV_DL.classes.Globals;
-using System.Windows;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
-using Newtonsoft.Json;
-using System.Windows.Media;
-using System.Windows.Shapes;
-using System.Windows.Controls;
-using System.Diagnostics;
-using System.IO;
-using System.Windows.Input;
-using Path = System.IO.Path;
-using System;
-using System.Reflection;
 using GronkhTV_DL.dialog;
 using GronkhTV_DL.dialog.classes;
-using System.Windows.Threading;
 using GronkhTV_DL.Properties;
-using System.Runtime.InteropServices;
+using Newtonsoft.Json;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
+using System.Diagnostics;
 using System.Globalization;
+using System.IO;
+using System.Reflection;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Threading;
+using static GronkhTV_DL.classes.Globals;
+using Path = System.IO.Path;
+using System.Windows.Forms;
+using Brushes = System.Windows.Media.Brushes;
+using MessageBox = System.Windows.MessageBox;
 
 namespace GronkhTV_DL
 {
-	/// <summary>
-	/// Interaction logic for MainWindow.xaml
-	/// </summary>
-	public partial class MainWindow : Window
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
 	{
 		private DispatcherTimer timer;
 		public MainWindow()
@@ -340,5 +339,53 @@ namespace GronkhTV_DL
 		{
 
 		}
-	}
+
+        public void WatchStream(object sender, RoutedEventArgs e)
+        {
+			var item = e.Source as MenuItem;
+			if (item?.DataContext is Streams stream)
+			{
+				if (stream.Qualities.StreamQualities.Count > 0)
+				{
+					SelectQualityDialog sqdialog = new(stream.Qualities.StreamQualities);
+					sqdialog.btnSelectQuality.Content = "Play";
+					if(sqdialog.ShowDialog() ?? false)
+					{
+						string url = QData.SelectedQuality?.url ?? "";
+						if (!string.IsNullOrWhiteSpace(url))
+						{
+							//https://www.aspsnippets.com/questions/144006/Play-Embed-m3u8-video-in-Windows-Application-using-C-and-VBNet/
+                            string html = "<html><head>";
+                            html += "<meta content='IE=edge' http-equiv='X-UA-Compatible'/>";
+                            html += "<link href='https://unpkg.com/video.js/dist/video-js.css' rel='stylesheet'>";
+                            html += "<script src='https://unpkg.com/video.js/dist/video.js'></script>";
+                            html += "<script src='https://unpkg.com/videojs-contrib-hls/dist/videojs-contrib-hls.js'></script>";
+                            html += "<video id='my_video' class='video-js vjs-fluid vjs-default-skin' controls preload='auto' data-setup='{}' autoplay>";
+                            html += "<source src='" + url.Trim() + "' type='application/x-mpegURL'>";
+                            html += "</video>";
+                            html += "<script>";
+                            html += "var player = videojs('my_video');";
+                            html += "player.play();";
+                            html += "</script>";
+                            html += "</body></html>";
+
+                            System.Windows.Forms.WebBrowser wb = new()
+                            {
+                                Dock = DockStyle.Fill,
+                                DocumentText = html
+                            };
+
+							Form player = new()
+							{
+								Text = stream.title
+							};
+							player.Controls.Add(wb);
+                            player.Show();
+						}
+					}
+				}
+			}
+            lvStreams.IsEnabled = true;
+        }
+    }
 }

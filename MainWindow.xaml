@@ -25,6 +25,7 @@
 
         <ContextMenu x:Key="contextMenu">
             <MenuItem Name="downloadStream" Header="Download Stream" Click="DownloadStream" />
+            <MenuItem Name="watchStream" Header="Watch Stream" Click="WatchStream" />
         </ContextMenu>
 
         <Style x:Key="styleContainer" TargetType="{x:Type ListViewItem}">
