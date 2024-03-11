@@ -16,25 +16,25 @@
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<DebugType>portable</DebugType>
 		<IsPublishable>False</IsPublishable>
-		<Optimize>True</Optimize>
+		<Optimize>False</Optimize>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
 		<DebugType>portable</DebugType>
 		<IsPublishable>False</IsPublishable>
-		<Optimize>True</Optimize>
+		<Optimize>False</Optimize>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<DebugType>portable</DebugType>
 		<IsPublishable>False</IsPublishable>
-		<Optimize>False</Optimize>
+		<Optimize>True</Optimize>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
 		<DebugType>portable</DebugType>
 		<IsPublishable>False</IsPublishable>
-		<Optimize>False</Optimize>
+		<Optimize>True</Optimize>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -42,9 +42,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="LibVLCSharp.WPF" Version="3.8.2" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="Selenium.WebDriver" Version="4.16.2" />
 		<PackageReference Include="Selenium.WebDriver.ChromeDriver" Version="120.0.6099.10900" />
+		<PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.20" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -75,6 +77,18 @@
 		<None Update="youtubedl\youtube-dl.exe">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="C:\Users\Nico\.nuget\packages\wpfmediakit\2.3.0\build\EVRPresenter64.dll" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="C:\Users\Nico\.nuget\packages\wpfmediakit\2.3.0\build\EVRPresenter32.dll" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="C:\Users\Nico\.nuget\packages\wpfmediakit\2.3.0\build\DirectShowLib-2005.dll" />
 	</ItemGroup>
 
 </Project>

@@ -11,20 +11,19 @@ using System.IO;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Threading;
 using static GronkhTV_DL.classes.Globals;
-using Path = System.IO.Path;
-using System.Windows.Forms;
 using Brushes = System.Windows.Media.Brushes;
 using MessageBox = System.Windows.MessageBox;
+using Path = System.IO.Path;
+
 
 namespace GronkhTV_DL
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
+	/// <summary>
+	/// Interaction logic for MainWindow.xaml
+	/// </summary>
+	public partial class MainWindow : Window
 	{
 		private DispatcherTimer timer;
 		public MainWindow()
@@ -247,7 +246,7 @@ namespace GronkhTV_DL
 						bool killed = false;
 						bool didRun = false;
 						CancelDownload.Visibility = Visibility.Visible;
-						
+
 						CancelDownload.Click += new((sender, e) =>
 						{
 							if (didRun) return;
@@ -256,7 +255,7 @@ namespace GronkhTV_DL
 								if (MessageBox.Show("Cancel Stream Download?", "Cancel?", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes) return;
 								process.Kill();
 								didRun = killed = true;
-								
+
 							}
 							catch (Exception) { }
 						});
@@ -308,7 +307,7 @@ namespace GronkhTV_DL
 			{
 				miWebDriverStatus.Foreground = Brushes.Orange;
 				miWebDriverStatus.Text = "WebDriver loading";
-				var s = DriverFinder.FullPath(new ChromeOptions() { BrowserVersion = "120" });
+				var s = DriverFinder.FullPath(new ChromeOptions() { BrowserVersion = "stable" });
 				var driverService = ChromeDriverService.CreateDefaultService(s);
 				driverService.HideCommandPromptWindow = true;
 				var options = new ChromeOptions();
@@ -340,8 +339,8 @@ namespace GronkhTV_DL
 
 		}
 
-        public void WatchStream(object sender, RoutedEventArgs e)
-        {
+		public void WatchStream(object sender, RoutedEventArgs e)
+		{
 			var item = e.Source as MenuItem;
 			if (item?.DataContext is Streams stream)
 			{
@@ -349,43 +348,54 @@ namespace GronkhTV_DL
 				{
 					SelectQualityDialog sqdialog = new(stream.Qualities.StreamQualities);
 					sqdialog.btnSelectQuality.Content = "Play";
-					if(sqdialog.ShowDialog() ?? false)
+					if (sqdialog.ShowDialog() ?? false)
 					{
 						string url = QData.SelectedQuality?.url ?? "";
 						if (!string.IsNullOrWhiteSpace(url))
 						{
-							//https://www.aspsnippets.com/questions/144006/Play-Embed-m3u8-video-in-Windows-Application-using-C-and-VBNet/
-                            string html = "<html><head>";
-                            html += "<meta content='IE=edge' http-equiv='X-UA-Compatible'/>";
-                            html += "<link href='https://unpkg.com/video.js/dist/video-js.css' rel='stylesheet'>";
-                            html += "<script src='https://unpkg.com/video.js/dist/video.js'></script>";
-                            html += "<script src='https://unpkg.com/videojs-contrib-hls/dist/videojs-contrib-hls.js'></script>";
-                            html += "<video id='my_video' class='video-js vjs-fluid vjs-default-skin' controls preload='auto' data-setup='{}' autoplay>";
-                            html += "<source src='" + url.Trim() + "' type='application/x-mpegURL'>";
-                            html += "</video>";
-                            html += "<script>";
-                            html += "var player = videojs('my_video');";
-                            html += "player.play();";
-                            html += "</script>";
-                            html += "</body></html>";
+							Player p = new();
+							p.Show();
+							p.Play(url);
 
-                            System.Windows.Forms.WebBrowser wb = new()
-                            {
-                                Dock = DockStyle.Fill,
-                                DocumentText = html
-                            };
+							//var exedir = AppDomain.CurrentDomain.BaseDirectory;
+							//var css = File.ReadAllText($"{exedir.Replace("\\", "/")}classes/video-js.css");
+							//var js1 = File.ReadAllText($"{exedir.Replace("\\", "/")}classes/video.js");
+							//var js2 = File.ReadAllText($"{exedir.Replace("\\", "/")}classes/videohls.js");
+							//string html = "<html><head>";
+							//html += "<meta content='IE=edge' http-equiv='X-UA-Compatible'/>";
+							//html += $"<style>{css}</style>";
+							//html += $"<script>{js1}</script>";
+							//html += $"<script>{js2}</script>";
+							//html += "<video id='my_video' class='video-js vjs-fluid vjs-default-skin' controls preload='auto' data-setup='{}' autoplay>";
+							//html += "<source src='" + url.Trim() + "' type='application/x-mpegURL'>";
+							//html += "</video>";
+							//html += "<script>";
+							//html += "var player = videojs('my_video');";
+							//html += "player.play();";
+							//html += "</script>";
+							//html += "</body></html>";
 
-							Form player = new()
-							{
-								Text = stream.title
-							};
-							player.Controls.Add(wb);
-                            player.Show();
+							//System.Windows.Forms.WebBrowser wb = new()
+							//{
+							//	Dock = DockStyle.Fill,
+							//	DocumentText = html,
+							//	AllowNavigation = false,
+							//	ScriptErrorsSuppressed = false
+							//};
+
+							//Form player = new()
+							//{
+							//	Text = stream.title
+							//};
+							//player.Controls.Add(_player);
+							//player.Show();
+
+							//html = js1 = js2 = css = "";
 						}
 					}
 				}
 			}
-            lvStreams.IsEnabled = true;
-        }
-    }
+			lvStreams.IsEnabled = true;
+		}
+	}
 }
