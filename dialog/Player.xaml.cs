@@ -1,5 +1,6 @@
 ﻿using LibVLCSharp.Shared;
 using System.Windows;
+using Application = System.Windows.Application;
 using MediaPlayer = LibVLCSharp.Shared.MediaPlayer;
 
 namespace GronkhTV_DL.dialog
@@ -9,6 +10,7 @@ namespace GronkhTV_DL.dialog
 	/// </summary>
 	public partial class Player : Window
 	{
+
 		public Player()
 		{
 			InitializeComponent();
@@ -53,8 +55,8 @@ namespace GronkhTV_DL.dialog
 			player.MediaPlayer = new MediaPlayer(media) { EnableHardwareDecoding = true, EnableKeyInput = true, EnableMouseInput = true };
 			player.MediaPlayer.Play();
 
-			btnPlay.Content = "Pause";
-		}
+            emojiBox.Style = Application.Current.Resources["PauseButtonText"] as Style;
+        }
 
 		private void Button_Click(object sender, RoutedEventArgs e)
 		{
@@ -62,13 +64,14 @@ namespace GronkhTV_DL.dialog
 			if (player.MediaPlayer.IsPlaying)
 			{
 				player.MediaPlayer.Pause();
-				btnPlay.Content = "Play";
-			}
+				emojiBox.Style = Application.Current.Resources["PlayButtonText"] as Style;
+            }
 			else
 			{
 				player.MediaPlayer.Play();
-				btnPlay.Content = "Pause";
-			}
+                emojiBox.Style = Application.Current.Resources["PauseButtonText"] as Style;
+            }
 		}
-	}
+
+    }
 }

@@ -42,6 +42,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Emoji.Wpf" Version="0.3.4" />
 		<PackageReference Include="LibVLCSharp.WPF" Version="3.8.2" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="Selenium.WebDriver" Version="4.16.2" />

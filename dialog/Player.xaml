@@ -1,26 +1,43 @@
 ﻿<Window x:Class="GronkhTV_DL.dialog.Player"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:clr="clr-namespace:System;assembly=mscorlib"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GronkhTV_DL.dialog"
 		xmlns:WPFVideo="clr-namespace:LibVLCSharp.WPF;assembly=LibVLCSharp.WPF"
+        xmlns:classes="clr-namespace:GronkhTV_DL.classes"
+        xmlns:emoji="clr-namespace:Emoji.Wpf;assembly=Emoji.Wpf"
         mc:Ignorable="d"
-        Title="Player" Height="450" Width="800" Foreground="Black">
-	<Grid>
-		<WPFVideo:VideoView
-			x:Name="player">
-			<Button 
-				x:Name="btnPlay"
-				Click="Button_Click" 
-				Content="Play/Pause" 
-				HorizontalAlignment="Center" 
-				VerticalAlignment="Center" 
-				Foreground="#FF0A0808" 
-				BorderBrush="Transparent" 
-				Background="#00DDDDDD" 
-				FontSize="20"/>
-		</WPFVideo:VideoView>
+        Title="Player" Height="450" Width="800" Foreground="Black" x:Name="wnd">
+   <Window.Resources>
+      <clr:String x:Key="PlayButtonText">▶️</clr:String>
+      <clr:String x:Key="PauseButtonText">⏸️</clr:String>
+      <classes:StringConverter x:Key="StringConverter"/>
+   </Window.Resources>
 
-	</Grid>
+   <Grid x:Name="grid">
+      <DockPanel>
+         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
+            <Slider x:Name="volSlider" Value="50" Minimum="0" IsSnapToTickEnabled="True" TickFrequency="1" Maximum="100" Width="100" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+            <Label Content="{Binding ElementName=volSlider, Path=Value, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            <Button 
+			      x:Name="btnPlay"
+			      Click="Button_Click"
+               VerticalAlignment="Center"
+			      Foreground="#FF0A0808" 
+			      BorderBrush="Transparent" 
+			      Background="#00DDDDDD" 
+			      FontSize="20">
+               <emoji:TextBlock x:Name="emojiBox" ColorBlend="True">▶️</emoji:TextBlock>
+            </Button>
+         </StackPanel>
+         <WPFVideo:VideoView x:Name="player"
+                             Width="Auto" 
+                             Height="Auto" 
+                             Background="Green"
+                             >
+         </WPFVideo:VideoView>
+      </DockPanel>
+   </Grid>
 </Window>
