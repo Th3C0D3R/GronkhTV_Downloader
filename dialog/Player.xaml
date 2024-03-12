@@ -10,18 +10,18 @@
         xmlns:emoji="clr-namespace:Emoji.Wpf;assembly=Emoji.Wpf"
         mc:Ignorable="d"
         Title="Player" Height="450" Width="800" Foreground="Black" x:Name="wnd">
-   <Window.Resources>
-      <clr:String x:Key="PlayButtonText">▶️</clr:String>
-      <clr:String x:Key="PauseButtonText">⏸️</clr:String>
-      <classes:StringConverter x:Key="StringConverter"/>
-   </Window.Resources>
+	<Window.Resources>
+		<clr:String x:Key="PlayButtonText">▶️</clr:String>
+		<clr:String x:Key="PauseButtonText">⏸️</clr:String>
+		<classes:StringConverter x:Key="StringConverter"/>
+	</Window.Resources>
 
-   <Grid x:Name="grid">
-      <DockPanel>
-         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
-            <Slider x:Name="volSlider" Value="50" Minimum="0" IsSnapToTickEnabled="True" TickFrequency="1" Maximum="100" Width="100" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-            <Label Content="{Binding ElementName=volSlider, Path=Value, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-            <Button 
+	<Grid x:Name="grid">
+		<DockPanel>
+			<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
+				<Slider x:Name="volSlider" Value="50" Minimum="0" IsSnapToTickEnabled="True" TickFrequency="1" Maximum="100" Width="100" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+				<Label Content="{Binding ElementName=volSlider, Path=Value, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+				<Button 
 			      x:Name="btnPlay"
 			      Click="Button_Click"
                VerticalAlignment="Center"
@@ -29,15 +29,14 @@
 			      BorderBrush="Transparent" 
 			      Background="#00DDDDDD" 
 			      FontSize="20">
-               <emoji:TextBlock x:Name="emojiBox" ColorBlend="True">▶️</emoji:TextBlock>
-            </Button>
-         </StackPanel>
-         <WPFVideo:VideoView x:Name="player"
+					<emoji:TextBlock x:Name="emojiBox" ColorBlend="True">▶️</emoji:TextBlock>
+				</Button>
+			</StackPanel>
+			<WPFVideo:VideoView x:Name="player"
                              Width="Auto" 
                              Height="Auto" 
-                             Background="Green"
-                             >
-         </WPFVideo:VideoView>
-      </DockPanel>
-   </Grid>
+                             Background="Black" >
+			</WPFVideo:VideoView>
+		</DockPanel>
+	</Grid>
 </Window>

@@ -16,6 +16,13 @@ namespace GronkhTV_DL.dialog
 			InitializeComponent();
 			this.KeyDown += Player_KeyDown;
 			this.KeyUp += Player_KeyUp;
+			this.Closing += Player_Closing;
+		}
+
+		private void Player_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
+		{ 
+			if (player.MediaPlayer == null) return;
+			player.MediaPlayer.Stop();
 		}
 
 		private void Player_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
@@ -50,12 +57,12 @@ namespace GronkhTV_DL.dialog
 		public void Play(string uri)
 		{
 			Core.Initialize();
-			LibVLC libvlc = new LibVLC(enableDebugLogs: true);
+			LibVLC libvlc = new();
 			var media = new Media(libvlc, new Uri(uri));
-			player.MediaPlayer = new MediaPlayer(media) { EnableHardwareDecoding = true, EnableKeyInput = true, EnableMouseInput = true };
+			player.MediaPlayer = new MediaPlayer(media) { EnableHardwareDecoding = true, EnableKeyInput = true, EnableMouseInput = true};
 			player.MediaPlayer.Play();
 
-            emojiBox.Style = Application.Current.Resources["PauseButtonText"] as Style;
+            emojiBox.Text = Application.Current.Resources["PauseButtonText"] as string;
         }
 
 		private void Button_Click(object sender, RoutedEventArgs e)
@@ -64,13 +71,13 @@ namespace GronkhTV_DL.dialog
 			if (player.MediaPlayer.IsPlaying)
 			{
 				player.MediaPlayer.Pause();
-				emojiBox.Style = Application.Current.Resources["PlayButtonText"] as Style;
-            }
+				emojiBox.Text = Application.Current.Resources["PlayButtonText"] as string;
+			}
 			else
 			{
 				player.MediaPlayer.Play();
-                emojiBox.Style = Application.Current.Resources["PauseButtonText"] as Style;
-            }
+                emojiBox.Text = Application.Current.Resources["PauseButtonText"] as string;
+			}
 		}
 
     }
