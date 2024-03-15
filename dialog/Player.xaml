@@ -9,34 +9,43 @@
         xmlns:classes="clr-namespace:GronkhTV_DL.classes"
         xmlns:emoji="clr-namespace:Emoji.Wpf;assembly=Emoji.Wpf"
         mc:Ignorable="d"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}"
         Title="Player" Height="450" Width="800" Foreground="Black" x:Name="wnd">
-	<Window.Resources>
-		<clr:String x:Key="PlayButtonText">▶️</clr:String>
-		<clr:String x:Key="PauseButtonText">⏸️</clr:String>
-		<classes:StringConverter x:Key="StringConverter"/>
-	</Window.Resources>
+    <Window.Resources>
+        <DrawingImage x:Key="ImgSourcePlay" emoji:Image.Source="▶️"/>
+        <DrawingImage x:Key="ImgSourcePause" emoji:Image.Source="⏸️"/>
+        <classes:StringConverter x:Key="StringConverter"/>
+    </Window.Resources>
 
-	<Grid x:Name="grid">
-		<DockPanel>
-			<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
-				<Slider x:Name="volSlider" Value="50" Minimum="0" IsSnapToTickEnabled="True" TickFrequency="1" Maximum="100" Width="100" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-				<Label Content="{Binding ElementName=volSlider, Path=Value, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-				<Button 
-			      x:Name="btnPlay"
-			      Click="Button_Click"
-               VerticalAlignment="Center"
-			      Foreground="#FF0A0808" 
-			      BorderBrush="Transparent" 
-			      Background="#00DDDDDD" 
-			      FontSize="20">
-					<emoji:TextBlock x:Name="emojiBox" ColorBlend="True">▶️</emoji:TextBlock>
-				</Button>
-			</StackPanel>
-			<WPFVideo:VideoView x:Name="player"
+    <Grid x:Name="grid">
+        <DockPanel>
+            <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
+                <Slider x:Name="timeSlider" 
+                        Value="{Binding TimeElapsed}" 
+                        Minimum="0"
+                        IsSnapToTickEnabled="True"
+                        TickFrequency="1"
+                        Maximum="{Binding VideoDuration}"
+                        ToolTip="{Binding ToolTipVideoTime}"
+                        Width="350" VerticalAlignment="Center">
+                </Slider>
+                <Button 
+			        x:Name="btnPlay"
+			        Click="Button_Click"
+					VerticalAlignment="Center"
+			        Foreground="#FF0A0808" 
+			        BorderBrush="Transparent" 
+			        Background="#00DDDDDD"
+                    HorizontalAlignment="Right"
+			        Width="30" Height="30">
+                    <Image x:Name="emojiBox" Source="{StaticResource ImgSourcePlay}"/>
+                </Button>
+            </StackPanel>
+            <WPFVideo:VideoView x:Name="player"
                              Width="Auto" 
                              Height="Auto" 
                              Background="Black" >
-			</WPFVideo:VideoView>
-		</DockPanel>
-	</Grid>
+            </WPFVideo:VideoView>
+        </DockPanel>
+    </Grid>
 </Window>
