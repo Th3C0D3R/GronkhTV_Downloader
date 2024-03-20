@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Media;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 using Application = System.Windows.Application;
 using MediaPlayer = LibVLCSharp.Shared.MediaPlayer;
 
